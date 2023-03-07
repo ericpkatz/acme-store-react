@@ -27,41 +27,27 @@ const App = ()=> {
     setProducts(products.filter(p => p.id !== product.id));
   };
 
-  return React.createElement(
-    'div',
-    null,
-    React.createElement(
-      'button',
-      {
-        onClick: create,
-        disabled: products.length >= 10
-      },
-      'Create A New Product'
-    ),
-    React.createElement(
-      'ul',
-      null,
-      products.map( product => {
-        return React.createElement(
-          'li',
-          { key: product.id },
-          product.name,
-          React.createElement(
-            'button',
-            {
-              onClick: ()=> {
-                destroy(product)
-              }
-            },
-            'x'
-          )
-        )
-      })
-    ),
-    React.createElement('h2', null, `You are ${products.length} products`)
+  return (
+    <div>
+      <button disabled={ products.length >= 10} onClick={ create } >Create A New Product</button>
+      <ul>
+        {
+          products.map( product => {
+            return (
+              <li>
+                { product.name }
+                <button onClick={ ()=> destroy(product)}>x</button>
+              </li>
+            );
+          })
+        }
+      </ul>
+      <h2>You have { products.length } Products</h2>
+    </div>
   );
+
 };
 
 
-root.render(React.createElement(App));
+root.render(<App />);
 

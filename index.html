@@ -1,12 +1,68 @@
 <html>
   <head>
     <title>Acme Store React</title>
+<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.3.4/axios.min.js" integrity="sha512-LUKzDoJKOLqnxGWWIBM4lzRBlxcva2ZTztO8bTcWPmDSpkErWx0bSP4pdsjNH8kiHAUPaT06UXcb+vOEZH+HpQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
      <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-    <script src='/assets/app.js' defer></script>
   </head>
   <body>
     <div id='root'></div>
+    <script type='text/babel'>
+const root = ReactDOM.createRoot(document.querySelector('#root'));
+
+
+const App = ()=> {
+  const [products, setProducts] = React.useState([]);
+
+  React.useEffect(()=> {
+    const fetchProducts = async()=> {
+      const response = await fetch('/api/products');
+      setProducts(await response.json());
+    };
+    fetchProducts();
+  }, []);
+
+  const create = async()=> {
+    const response = await axios.post(
+      '/api/products',
+      {
+        name: Math.random()
+      }
+    );
+    setProducts([...products, response.data]);
+  };
+
+  const destroy = async(product)=> {
+    await axios.delete(`/api/products/${product.id}`);
+    setProducts(products.filter(p => p.id !== product.id));
+  };
+
+  return (
+    <div>
+      <button disabled={ products.length >= 10} onClick={ create } >Create A New Product</button>
+      <ul>
+        {
+          products.map( product => {
+            return (
+              <li key={ product.id }>
+                { product.name }
+                <button onClick={ ()=> destroy(product)}>x</button>
+              </li>
+            );
+          })
+        }
+      </ul>
+      <h2>You have { products.length } Products</h2>
+    </div>
+  );
+
+};
+
+
+root.render(<App />);
+
+    </script>
   </body>
 </html>
