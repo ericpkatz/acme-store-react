@@ -18,12 +18,33 @@ const app = express();
 const path = require('path');
 
 app.use('/assets', express.static('assets'));
+app.use(express.json());
 
 app.get('/', (req, res)=> res.sendFile(path.join(__dirname, 'index.html')));
 
 app.get('/api/products', async(req, res, next)=> {
   try {
     res.send(await Product.findAll());
+  }
+  catch(ex){
+    next(ex);
+  }
+});
+
+app.post('/api/products', async(req, res, next)=> {
+  try {
+    res.status(201).send(await Product.create(req.body));
+  }
+  catch(ex){
+    next(ex);
+  }
+});
+
+app.delete('/api/products/:id', async(req, res, next)=> {
+  try {
+    const product = await Product.findByPk(req.params.id);
+    await product.destroy();
+    res.sendStatus(204);
   }
   catch(ex){
     next(ex);
